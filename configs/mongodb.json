@@ -1,5 +1,9 @@
 {
   "db_name": "Tellar",
   "user": "cuhungahihi",
-  "password": "login"
+  "password": "PfyyDfiKLdQBIRKD",
+  "collections": {
+    "user_collection": "users",
+    "group_collection": "groups"
+  }
 }

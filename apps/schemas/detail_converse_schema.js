@@ -1,13 +1,13 @@
 let mgs = require("mongoose");
 let Schema = mgs.Schema;
 
-let schema_user = "users";
+let user_collection = require('../../configs/mongodb').collections.user_collection;
 
-let schema = Schema({
+let schema = new Schema({
   _id: Schema.Types.ObjectId,
   sender_id: {
     type: Schema.Types.ObjectId,
-    ref: schema_user,
+    ref: user_collection,
     required: true
   },
   content: {

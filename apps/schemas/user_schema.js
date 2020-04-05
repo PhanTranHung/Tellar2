@@ -1,12 +1,11 @@
 let mgs = require("mongoose");
 let default_user = require('../../configs/default_attr');
+let group_collection = require('../../configs/mongodb').collections.group_collection;
 
-console.log(default_user.DEFAULT_COVER_PHOTO);
-let schema_group = "groups";
 let Schema = mgs.Schema;
 
-let user = mgs.Schema({
-  _id: mgs.Schema.Types.ObjectId,
+let user = new Schema({
+  _id: Schema.Types.ObjectId,
   name: {
     type: String,
     required: true,
@@ -70,8 +69,8 @@ let user = mgs.Schema({
     default: false
   },
   joined_group: [{
-    type: mgs.Schema.Types.ObjectId,
-    ref: schema_group
+    type: Schema.Types.ObjectId,
+    ref: group_collection
   }],
   cover_photo: {
     type: String,

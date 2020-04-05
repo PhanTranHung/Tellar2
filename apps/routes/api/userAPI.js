@@ -2,19 +2,21 @@ let express = require('express');
 let router = express.Router();
 let auth = require('../../middleware/auth.middleware');
 let User = require('../../models/user_model');
+let collections = require('../../../configs/mongodb').collections;
 
 /* GET home page. */
-router.get('/userinfo', auth.isAuth ,function(req, res, next) {
+router.get('/userinfo', auth.isAuth, function (req, res, next) {
   let userInfo = req.userInfo.data;
   User.findById(userInfo._id)
     .select('name joined_group cover_photo')
     .populate({
       path: 'joined_group',
       select: 'members cover_group display_name type_of isPublic',
+      model: collections.group_collection,
       populate: {
-        path: 'members',
+        path: 'groups.members',
         select: 'cover_photo name is_activate last_active',
-        model: 'groups'
+        model: collections.user_collection
       }
     })
     .exec()
@@ -32,8 +34,10 @@ router.get('/userinfo', auth.isAuth ,function(req, res, next) {
         }),
 
       };
-      res.status(200).json(response);
-    });
+      res.status(200).json(user);
+    }).catch(err => {
+    console.error(err);
+  })
 });
 
 module.exports = router;

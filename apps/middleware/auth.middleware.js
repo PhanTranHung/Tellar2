@@ -28,9 +28,10 @@ let isAuth = async (req, res, next) => {
     }
   } else {
 
-    return res.status(403).send({
-      message: 'No token provided.',
-    });
+    // return res.status(403).send({
+    //   message: 'No token provided.',
+    // });
+    return res.redirect('/sign-in');
   }
 };
 
