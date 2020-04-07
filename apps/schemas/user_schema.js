@@ -4,7 +4,7 @@ let group_collection = require('../../configs/mongodb').collections.group_collec
 
 let Schema = mgs.Schema;
 
-let user = new Schema({
+let schema = new Schema({
   _id: Schema.Types.ObjectId,
   name: {
     type: String,
@@ -92,5 +92,5 @@ let user = new Schema({
   }
 });
 
-module.exports = user;
+module.exports = schema;
 

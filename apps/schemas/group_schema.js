@@ -1,19 +1,18 @@
 let mgs = require("mongoose");
-let cvs = require('../models/detail_convese_model');
-// let default_user_img = require('../../configs/default_attr')
+let Schema = mgs.Schema;
 
 let user_collection = require('../../configs/mongodb').collections.user_collection;
 let default_user_img = require('../../configs/default_attr');
 
-let schema = new mgs.Schema({
-  _id: mgs.Schema.Types.ObjectId,
+let schema = new Schema({
+  _id: Schema.Types.ObjectId,
   display_name: {
     type: String,
     required: true,
     trim: true
   },
   members: [{
-    type: [mgs.Schema.Types.ObjectId],
+    type: Schema.Types.ObjectId,
     ref: user_collection,
     required: true,
     default: []
@@ -24,12 +23,12 @@ let schema = new mgs.Schema({
     default: true,
     required: this.type_of
   },
-  admin: {
+  admin: [{
     required: this.type_of,
-    type: [mgs.Schema.Types.ObjectId],
+    type: Schema.Types.ObjectId,
     ref: user_collection,
     min: 1
-  },
+  }],
   detail_converse: {
     type: String,
     required: true,
@@ -40,8 +39,8 @@ let schema = new mgs.Schema({
     type: String,
     required: true,
     default: null,
-    get: () => {
-      return (this.cover_group) ? this.cover_group : default_user_img.DEFAULT_COVER_GROUP;
+    get: (v) => {
+      return (v) ? v : default_user_img.DEFAULT_COVER_GROUP;
     }
   },
   password: String

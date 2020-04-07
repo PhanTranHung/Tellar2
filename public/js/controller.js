@@ -4,14 +4,13 @@ app.controller('rootController', ['$scope', '$rootScope', 'http', function ($sco
 
   $scope.userInfo = {};
   $scope.selectedConvese = null;
-  $scope.memsOfGroup = null;
+  $scope.joined_group = null;
 
   let catchErr = err => console.log(err);
 
   http.getUserInfo()
     .then(res => {
       $scope.userInfo = res.data;
-      $scope.selectedConvese = $scope.userInfo.joined_group[0];
       catchErr(res.data)
     })
     .catch(err => catchErr(err));
@@ -20,7 +19,7 @@ app.controller('rootController', ['$scope', '$rootScope', 'http', function ($sco
 
   $scope.selectConverse = function (group) {
     $scope.selectedConvese = group;
-    http.getMemOfGroup($scope.selectedConvese.group_id).then(res => {$scope.memsOfGroup = res.data})
+    http.getGroupInfo($scope.selectedConvese.group_id).then(res => {$scope.groupInfo = res.data})
   };
   $scope.showClass = (group_id) => {
     if ($scope.selectedConvese.group_id === group_id)
@@ -42,10 +41,10 @@ angular.module('tellar').factory('http', ['$http', function ($http) {
         },
       });
     },
-    getMemOfGroup: function (id_gr) {
+    getGroupInfo: function (id_gr) {
       return $http({
         method: 'GET',
-        url: '/api/member',
+        url: '/api/group',
         params: {
           group_id: id_gr
         },
