@@ -17,6 +17,7 @@ router.get('/', auth.isAuth, function (req, res, next) {
     .then(group => {
       let response = {
         group_id: group._id,
+        name: group.display_name,
         cover_group: group.cover_group,
         members: group.members,
         last_message: {}

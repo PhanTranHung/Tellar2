@@ -17,7 +17,7 @@
 <div class="head_bar">
 
 </div>
-<div class="container" ng-controller="rootController">
+<div class="container" ng-controller="rootController as root">
     <div class="inner_container">
         <nav class="info_bar">
             <div class="cover action_bar">
@@ -72,9 +72,9 @@
                             </div>
                         </div>
                         <div class="name_user flex">
-                            <span id="username">{{selectedConvese.group_name}}</span>
+                            <span id="username">{{selectedConvese.name}}</span>
                             <span class="last_active_time">
-                                     Active 5 days ago
+                                     {{date_rendering(mem.last_active)}}
                                 </span>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                             </span>
                         </div>
                         <div class="conversation_list">
-                            <ul class="a" ng-repeat="group in userInfo.joined_group">
+                            <ul class="a" ng-repeat="group in joined_group">
                                 <li class="item_cvr" ng-click="selectConverse(group)">
                                     <div class="content_cvr" ng-class="showClass(group.group_id)">
                                         <a class="" href="#">
@@ -145,7 +145,7 @@
                                             </div>
                                             <div class="info_cvr flex">
                                                 <div class="name_cvr">
-                                                    <h4>{{group.group_name}}</h4>
+                                                    <h4>{{group.name}}</h4>
                                                 </div>
                                                 <div class="msg_cvr flex">
                                                     <span>Last message</span>
@@ -156,8 +156,6 @@
                                         </a>
                                     </div>
                                 </li>
-
-
                             </ul>
                         </div>
                     </div>
@@ -259,42 +257,23 @@
                                 <span>GLOBAL MEMBERS</span>
                             </div>
                         </section>
-                        <section class="list_members" ng-repeat="mem in memsOfGroup">
-                            <div class="border_item inner_act flex">
+                        <section class="list_members">
+                            <div class="border_item inner_act flex" ng-repeat="mem in selectedConvese.members">
                                 <div class="title_cvr flex ">
                                     <div class="fit_content padding_photo_member">
                                         <div class="circle_cover">
-                                            <img class="fixed_size_of_members_gr" src="img/cover.jpg" alt="">
+                                            <img class="fixed_size_of_members_gr" src="{{mem.cover_photo}}" alt="">
                                         </div>
                                     </div>
                                     <div class="name_user flex">
-                                        <span>Phan Tran Hung</span>
+                                        <span>{{mem.name}}</span>
                                         <span class="last_active_time">
-                                                 Active 5 days ago
+                                                 {{date_rendering(mem.last_active)}}
                                             </span>
                                     </div>
                                 </div>
                                 <div class="flex margin_r_12px">
-                                    <span id="member_status" class="member_status"></span>
-                                </div>
-                            </div>
-
-                            <div class="border_item inner_act flex">
-                                <div class="title_cvr flex ">
-                                    <div class="fit_content padding_photo_member">
-                                        <div class="circle_cover">
-                                            <img class="fixed_size_of_members_gr" src="img/cover.jpg" alt="">
-                                        </div>
-                                    </div>
-                                    <div class="name_user flex">
-                                        <span>Phan Tran Hung</span>
-                                        <span class="last_active_time">
-                                                 Active 5 days ago
-                                            </span>
-                                    </div>
-                                </div>
-                                <div class="flex margin_r_12px">
-                                    <span id="member_status" class="member_status"></span>
+                                    <span id="member_status" class="member_status" ng-class="mem.is_activate ? 'member_status_onl': 'member_status_off' "></span>
                                 </div>
                             </div>
                         </section>

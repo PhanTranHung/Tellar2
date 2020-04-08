@@ -59,7 +59,7 @@ let schema = new Schema({
     required: true
   },
   last_active: {
-    type: String,
+    type: Date,
     trim: true,
     lowercase: true,
     default: Date

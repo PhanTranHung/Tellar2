@@ -45,7 +45,7 @@ input {
 }
 
 .clicked {
-    background: #c1c1c1;
+    background: #9b9b9b;
 }
 
 .inner_container {
@@ -205,7 +205,7 @@ input {
 }
 
 .content_cvr {
-    border-radius: 10px;
+    border-radius: 20px;
     display: flex;
     height: 100%;
     align-items: center;
@@ -302,12 +302,19 @@ input {
 }
 
 .member_status {
-    background: rgb(66, 183, 42);
     border-radius: 50%;
     display: inline-block;
     height: 6px;
     margin-left: 4px;
     width: 6px;
+}
+
+.member_status_onl {
+    background: rgb(66, 183, 42);
+}
+
+.member_status_off {
+    background: rgb(132, 132, 132);
 }
 
 .border_item {

@@ -34,17 +34,20 @@ db.once('open', function () {
   console.log("Connected to Mongoose Cloud");
 });
 
-// require('./test/findByID');
+require('./test/findByID');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'apps', 'views'));
 app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
+
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use('/', (req, res, next) => setInterval((next) => next(),3000, next));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
