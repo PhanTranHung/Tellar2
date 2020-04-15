@@ -17,7 +17,7 @@ let schema = new Schema({
     required: true,
     default: []
   }],
-  type_of: Boolean,
+    type_of: Boolean,
   isPublic: {
     type: Boolean,
     default: true,

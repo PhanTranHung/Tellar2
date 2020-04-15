@@ -1,3 +1,5 @@
+// AngularJS
+
 let app = angular.module('tellar', []);
 
 app.controller('rootController', ['$scope', 'http', function ($scope, http) {
@@ -5,6 +7,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
   $scope.userInfo = {};
   $scope.selectedConvese = null;
   $scope.joined_group = null;
+  $scope.isFindUser = false;
 
   let catch_err = err => console.log(err);
 
@@ -25,10 +28,6 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
       });
   };
 
-  let show_group_info = () => {
-
-  };
-
   // setInterval(() => catch_err($scope.joined_group), 100);
 
   $scope.selectConverse = function (group) {
@@ -43,7 +42,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
 
   $scope.date_rendering = (date) => {
     date = new Date(Date.now() - Date.parse(date));
-
+    catch_err(date);
     let how_much = "";
 
     if (date.getFullYear() - 1970 > 0)
@@ -52,7 +51,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
       how_much = `${date.getMonth()} months`;
     else if (date.getDate() > 1)
       how_much = `${date.getDate()} days`;
-    else if (date.getHours() - old_date.getHours() > 0)
+    else if (date.getHours() > 1)
       how_much = `${date.getHours()} hours`;
     else
       how_much = "few minutes";
@@ -97,3 +96,19 @@ angular.module('tellar').factory('http', ['$http', function ($http) {
     }
   }
 }]);
+
+
+// JQuery
+$(document).ready(function () {
+  $('#input-tags').selectize({
+    delimiter: ',',
+    plugins: ["restore_on_backspace", 'remove_button'],
+    persist: false,
+    create: function(input) {
+      return {
+        value: input,
+        text: input
+      }
+    }
+  });
+});

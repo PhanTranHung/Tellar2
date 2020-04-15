@@ -3,6 +3,8 @@
     "ACCESS_TOKEN_SECRET": "nang-vi-ta-ma-hoa-may-hoa-gio-ta-vi-nang-ma-giet-ca-dong-song",
     "ACCESS_TOKEN_LIFE": "1h",
     "REFRESH_TOKEN_SECRET": "refresh-token-secrect-make-by-CuHungahihi",
-    "REFRESH_TOKEN_LIFE": "3650d"
+    "REFRESH_TOKEN_LIFE": "3650d",
+    "PORT": 8888,
+    "HTTPS_PORT": 40001
   }
 }
