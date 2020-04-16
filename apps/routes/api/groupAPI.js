@@ -3,6 +3,8 @@ let router = express.Router();
 let auth = require('../../middleware/auth.middleware');
 let Group = require('../../models/group_model');
 let user_collection = require('../../../configs/mongodb').collections.user_collection;
+let GroupController = require('../../controllers/grController');
+let client = require('../../helpers/client.helper');
 
 /**
  * require id_group or name of group
@@ -24,12 +26,15 @@ router.get('/join-group', auth.isAuth, (req, res) => {
 });
 
 /**
- * require array(user_id)
+ * require array(user_id): members
  */
-router.get('/create-group', auth.isAuth, (req, res) => {
-  let query = req.query.query.trim();
+router.post('/create-group', auth.isAuth, async (req, res) => {
+  let members = req.body.members;
+  members.push(req.userInfo.data._id.trim());
 
-
+  GroupController.createGroup(members)
+    .then(data => res.status(200).json({refresh: true}))
+    .catch(err => client.renderError(res, "An error occurred", err))
 });
 
 router.get('/add-to-group', auth.isAuth, (req, res) => {
@@ -42,7 +47,10 @@ router.get('/share-group', auth.isAuth, (req, res) => {
   res.status(200).json("A link which to other members can join this group ")
 });
 
-router.get('/rename-group', auth.isAuth, (req, res) => {
+/**
+ * The options can be: rename, public, change cover photo ....
+ */
+router.get('/options', auth.isAuth, (req, res) => {
   let query = req.query.query.trim();
 
 
@@ -51,13 +59,13 @@ router.get('/rename-group', auth.isAuth, (req, res) => {
 router.get('/', auth.isAuth, function (req, res, next) {
   let group_id = req.query.group_id.trim();
 
-  Group.findById(group_id)
-    .populate({
-      path: 'members',
-      select: 'name last_active is_activate cover_photo',
-      model: user_collection
-    })
-    .exec()
+  let populate = {
+    path: 'members',
+    select: 'name last_active is_activate cover_photo',
+    model: user_collection
+  };
+
+  GroupController.findGroupById(group_id, {}, populate)
     .then(group => {
       let response = {
         group_id: group._id,
@@ -68,10 +76,6 @@ router.get('/', auth.isAuth, function (req, res, next) {
       };
       res.status(200).json(response)
     })
-    .catch(err => {
-      res.status(200).data(err);
-      console.error(err)
-    });
 
 });
 

@@ -2,13 +2,14 @@ let mgs = require("mongoose");
 let Schema = mgs.Schema;
 
 let user_collection = require('../../configs/mongodb').collections.user_collection;
-let default_user_img = require('../../configs/default_attr');
+let default_attr= require('../../configs/default_attr');
 
 let schema = new Schema({
   _id: Schema.Types.ObjectId,
   display_name: {
     type: String,
-    required: true,
+    required: false,
+    default: null,
     trim: true
   },
   members: [{
@@ -17,7 +18,7 @@ let schema = new Schema({
     required: true,
     default: []
   }],
-    type_of: Boolean,
+  type_of: Boolean,
   isPublic: {
     type: Boolean,
     default: true,
@@ -33,14 +34,15 @@ let schema = new Schema({
     type: String,
     required: true,
     min: 5,
+    default: 'Conversation',
     trim: true
   },
   cover_group: {
     type: String,
-    required: true,
+    required: false,
     default: null,
     get: (v) => {
-      return (v) ? v : default_user_img.DEFAULT_COVER_GROUP;
+      return (v) ? v : default_attr.DEFAULT_COVER_GROUP;
     }
   },
   password: String

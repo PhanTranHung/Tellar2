@@ -1,25 +1,21 @@
 let User = require('../models/user_model');
 let Group = require('../models/group_model');
 
-let controller = function () {
-
-};
-
-let findUserById = function (id_user, filler) {
+let findUserById = function (id_user, selectFields) {
   return User.findById(id_user)
-    .select(filler)
+    .select(selectFields)
     .exec()
     .catch(err => console.error(err));
 };
 
-let findSomeOneByString = function (str, filler) {
+let findSomeOneByName = function (str, selectFields) {
   return User.find({name: new RegExp(str, 'i')})
-    .select(filler)
+    .select(selectFields)
     .exec()
     .catch(err => console.error(err));
 };
 
-controller.findSomeOneByString = findSomeOneByString;
-controller.findUserById = findUserById;
-
-module.exports = controller;
+module.exports = {
+  findSomeOneByName: findSomeOneByName,
+  findUserById: findUserById
+};

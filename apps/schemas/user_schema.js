@@ -13,7 +13,6 @@ let schema = new Schema({
     max: [30, 'Too many characters'],
     lowercase: false,
     trim: true
-
   },
   user_name: {
     type: String,
