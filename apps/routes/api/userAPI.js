@@ -5,6 +5,7 @@ let User = require('../../models/user_model');
 let Group = require('../../models/group_model');
 let UserController = require('../../controllers/userController');
 let GroupController = require('../../controllers/grController');
+let client = require('../../helpers/client.helper');
 
 /**
  * discovery more friend or any public group
@@ -16,9 +17,18 @@ router.get('/discovery', auth.isAuth, async (req, res) => {
 
   let userId = req.userInfo.data._id.trim();
   let name = req.query.name.trim();
+  if (!name) {
+    client.errors.missingParameter(res);
+    return;
+  }
 
   let selectFields = "name cover_photo";
   let listUser = await UserController.findSomeOneByName(name, selectFields);
+  listUser = listUser.map(function (elem) {
+    elem._doc.categories = "user";
+    console.log(elem);
+    return elem;
+  });
 
   selectFields = "display_name members cover_group";
   let filter = {
@@ -32,12 +42,15 @@ router.get('/discovery', auth.isAuth, async (req, res) => {
   };
 
   let limit = 10;
-  let listGroup = await GroupController.findGroupByName(name, selectFields, filter);
+  let listGroup = await GroupController.findGroupByName(name, selectFields, filter, limit);
+  listGroup = listGroup.map(function (elem) {
+    elem._doc.categories = "group";
+    elem._doc.name = elem.display_name;
+    return elem;
+  });
 
-  let response = {
-    people: listUser,
-    group: listGroup
-  };
+
+  let response = listUser.concat(listGroup);
 
   res.status(200).json(response);
 
@@ -68,13 +81,22 @@ router.get('/userinfo', auth.isAuth, function (req, res, next) {
 
   UserController.findUserById(id_user, selectFields)
     .then(user => {
-      let response = {
-        id: user._id,
-        name: user.name,
-        cover_photo: user.cover_photo,
-        joined_group: user.joined_group
-      };
-      res.status(200).json(response);
+      if (!user) {
+        let error_msg = "User does not exist";
+        client.renderError(res, {
+          message: error_msg,
+          redirect: "/sign-in"
+        }, error_msg, "16549");
+      }
+      else {
+        let response = {
+          id: user._id,
+          name: user.name,
+          cover_photo: user.cover_photo,
+          joined_group: user.joined_group
+        };
+        res.status(200).json(response);
+      }
     });
 });
 

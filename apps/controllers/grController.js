@@ -20,12 +20,13 @@ let findGroupById = function (id, selectFields, populate) {
     .catch(err => console.error(err));
 };
 
-let findGroupByName = function (name, selectFields, filter) {
+let findGroupByName = function (name, selectFields, filter={}, limit = 100) {
 
   filter.display_name = new RegExp(name, 'i');
 
   return Group.find(filter)
     .select(selectFields)
+    .limit(limit)
     .exec()
     .catch(err => console.error(err));
 };

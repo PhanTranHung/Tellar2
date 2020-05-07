@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title id="page_title">Tellar</title>
-    <link rel="stylesheet" href="css/homestyle.css">
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
     <!--===============================================================================================-->
     <link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.css">
+
+    <link rel="stylesheet" href="css/homestyle.css">
 
 
 
@@ -75,8 +76,22 @@
                 </div>
             </div>
             <section class="action_bar flex width77">
-                <div class="width100" ng-show="isFindUser">
-                    <div id="input-tags">
+                <div class="width100 clock" ng-show="isFindUser">
+                    <div class="clock-o">
+                        <div class="i-clock-o">
+                            To:
+                        </div>
+                        <div class="ii-clock-o">
+                            <input id="input-tags">
+                        </div>
+                        <div class="selectize-control clock-o">
+                            <div class="lt">
+                                <button id="create-group">Tao nhom</button>
+                            </div>
+                            <div class="lt">
+                                <button id="cancel">Huy</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="inner_act flex width100" ng-hide="isFindUser">

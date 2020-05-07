@@ -42,7 +42,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
 
   $scope.date_rendering = (date) => {
     date = new Date(Date.now() - Date.parse(date));
-    catch_err(date);
+    // catch_err(date);
     let how_much = "";
 
     if (date.getFullYear() - 1970 > 0)
@@ -57,8 +57,8 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
       how_much = "few minutes";
 
 
-  // else if (date. - old_date. > 0)
-  //     how_much = `${date. - old_date.} `;
+    // else if (date. - old_date. > 0)
+    //     how_much = `${date. - old_date.} `;
     return `Active ${how_much} ago.`;
   }
 
@@ -100,15 +100,134 @@ angular.module('tellar').factory('http', ['$http', function ($http) {
 
 // JQuery
 $(document).ready(function () {
-  $('#input-tags').selectize({
-    delimiter: ',',
-    plugins: ["restore_on_backspace", 'remove_button'],
-    persist: false,
-    create: function(input) {
-      return {
-        value: input,
-        text: input
+  let tagInput = $('#input-tags');
+  let createGroup = $('#create-group');
+  let cancel = $('#cancel');
+
+  function loadData(query, callback) {
+    if (!query.length) return callback();
+    console.log(query);
+    $.ajax({
+      url: "/api/user/discovery",
+      type: "GET",
+      data: {
+        name: query.toString(),
+        onlyPeople: false
+      },
+      error: function () {
+        callback()
+      },
+      success: function (res) {
+        callback(res);
+        // console.log(res);
       }
-    }
+    })
+  }
+
+  tagInput.selectize({
+    valueField: "_id",
+    // labelField: "name",
+    searchField: ["name", "display_name"],
+    optgroupField: 'categories',
+    optgroupValueField: 'id',
+    openOnFocus: false,
+    lockOptgroupOrder: true,
+    delimiter: ',',
+    plugins: ["restore_on_backspace", 'remove_button', 'optgroup_columns'],
+    create: false,
+    maxOptions: 10,
+    maxItems: 10,
+    closeAfterSelect: true,
+    optgroups: [
+      {$order: 1, id: 'user', name: 'User'},
+      {$order: 2, id: 'group', name: 'Group'},
+    ],
+    render: {
+      item: function (item, escape) {
+        return "<div class='selectize-item'><div class='selectize-item-inner'>" + item.name + "</div></div>";
+      },
+      option: function (item, escape) {
+        let name = item.name || item.display_name;
+        return `<div class="selectize-option">
+                  <div class="wrapper-left">
+                    <img class="inner-wrapper-left" src="${item.cover_group}">
+                  </div>
+                  <div class="wrapper-right">
+                    ${name}
+                  </div>
+                </div>`;
+      },
+      optgroup_header: function (data, escape) {
+        console.log("header" + JSON.stringify(data));
+        return `<div class="selectize-header">${escape(data.name)}</div>`
+      }
+    },
+    score: function (search) {
+      if (search.length < 3) return item => 0;
+      let score = this.getScoreFunction(search);
+      return item => {
+        return score(item);
+      };
+    },
+    load: function (query, callback) {
+      if (!query.length) return callback();
+      console.log(query);
+      $http("/api/user/discovery",
+        "GET",
+        {
+          name: query.toString(),
+          onlyPeople: false
+        })
+        .catch(callback())
+        .then(res => callback(res));
+    },
+  });
+
+  // tagInput.each(function () {
+  //   let $container = $('<div>').addClass('value').html('Current Value: ');
+  //   let $value = $('<span>').appendTo($container);
+  //   let $input = $(this);
+  //   let update = function () {
+  //     $value.text(JSON.stringify($input.val()));
+  //   };
+  //
+  //   $(this).on('change', update);
+  //   update();
+  //
+  //   $container.insertAfter($input.next());
+  // });
+
+  function $http(url, method = "GET", data = {}) {
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        url: url,
+        type: method,
+        data: data,
+        error: reject,
+        success: resolve,
+      });
+    });
+  }
+
+  createGroup.click(function () {
+    $(this).prop('disabled', true);
+    cancel.prop('disabled', true);
+    $http("/api/group/create-group",
+      "POST",
+      {
+        members: tagInput.val().split(',')
+      })
+      .catch(err => {
+        console.log(res);
+      })
+      .then(res => {
+        console.log(res);
+        $(this).prop('disabled', false);
+        cancel.prop('disabled', false);
+      });
+  });
+
+  cancel.click(function () {
+
   });
 });

@@ -113,7 +113,7 @@
         else {
           let d = new Date();
           localStorage.setItem('accessToken', data.accessToken);
-          document.cookie = `accessToken=${data.accessToken}; expires=${d.setTime(d.getTime() + (5000))}` ;
+          // document.cookie = `accessToken=${data.accessToken}; expires=${d.setTime(d.getTime() + (5000))}` ;
           window.location = "/";
         }
         console.log(data);
