@@ -29,7 +29,7 @@ router.get('/join-group', auth.isAuth, (req, res) => {
  * require array(user_id): members
  */
 router.post('/create-group', auth.isAuth, async (req, res) => {
-  let members = req.body['members[]'];
+  let members = req.body.members.split(",");
   if (!members) {
     client.renderError(res, "Members not null");
     return ;

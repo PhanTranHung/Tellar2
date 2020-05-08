@@ -215,7 +215,7 @@ $(document).ready(function () {
     $http("/api/group/create-group",
       "POST",
       {
-        members: tagInput.val().split(',')
+        members: tagInput.val()
       })
       .catch(err => {
         console.log(res);
