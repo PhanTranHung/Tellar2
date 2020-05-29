@@ -25,18 +25,37 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
       .catch(err => console.log(err))
       .then(groups => {
         $scope.joined_group = groups;
-        $scope.ordered = 0;
+        $scope.ordered = {key: 0, group_id: groups[0].group_id};
+        switchMessageArea(groups[0].group_id);
         $scope.$apply();
       });
   };
 
   $scope.selectConverse = function (key, group) {
     console.log(key);
-    $scope.ordered = key;
+    switchMessageArea(group.group_id);
+    $scope.ordered = {key: key, group_id: group.group_id};
   };
 
+  function switchMessageArea(messageAreaID){
+
+    if (msg_area[messageAreaID]) {
+      // hide the previous message area
+      msg_area[$scope.ordered.group_id].hide();
+
+      // show the message area just clicked
+      msg_area[messageAreaID].show();
+
+    } else {
+      msg_area[messageAreaID] = createNewMessageAreaElement(messageAreaID);
+
+
+      $('#wrap_able').append(msg_area[messageAreaID]);
+    }
+  }
+
   $scope.showClass = (group_id) => {
-    if ($scope.joined_group[$scope.ordered].group_id === group_id)
+    if ($scope.ordered.group_id === group_id)
       return "clicked";
     else return null;
   };
@@ -72,7 +91,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
   $scope.sentMessage = function(){
     if (!$scope.message.trim()) return;
 
-    http.send($scope.joined_group[$scope.ordered].group_id, $scope.message.trim())
+    http.send($scope.ordered.group_id, $scope.message.trim())
       .catch(err => console.log(err));
     $scope.message = '';
   };

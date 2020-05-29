@@ -1,6 +1,6 @@
 // JQuery
 let poster;
-let msg_area;
+let msg_area = {};
 let wrap_able;
 
 let msg_friend_begin = `<div class="line_text"><div class="friend-msg align_l"><div class="content_msg">`;
@@ -127,11 +127,18 @@ $(document).ready(function () {
   }
 });
 
-function addNewMessage(message, sender, attachment= {}) {
-
-  if (sender === userInfo.id)
-    msg_area.append(msg_me_begin + message + msg_end);
-  else
-    msg_area.append(msg_friend_begin + message + msg_end);
+function addNewMessage(message, sender, message_area, attachment = {}) {
+  if (msg_area[message_area])
+    if (sender === userInfo.id)
+      msg_area[message_area].append(msg_me_begin + message + msg_end);
+    else
+      msg_area[message_area].append(msg_friend_begin + message + msg_end);
   wrap_able.stop().animate({scrollTop: wrap_able[0].scrollHeight}, 100);
+}
+
+function createNewMessageAreaElement(message_area_id) {
+  let message_area = $('<div>');
+  message_area.attr('id', message_area_id);
+  message_area.class = "msg_space";
+  return message_area;
 }
