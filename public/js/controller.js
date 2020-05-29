@@ -5,9 +5,10 @@ let app = angular.module('tellar', []);
 app.controller('rootController', ['$scope', 'http', function ($scope, http) {
 
   $scope.userInfo = {};
-  $scope.selectedConvese = null;
+  $scope.ordered = null;
   $scope.joined_group = null;
   $scope.isFindUser = false;
+  $scope.message = '';
 
   let catch_err = err => console.log(err);
 
@@ -15,6 +16,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
     .catch(err => catch_err(err))
     .then(res => {
       $scope.userInfo = res.data;
+      window.userInfo = $scope.userInfo;
       refresh_group_info($scope.userInfo.joined_group);
     });
 
@@ -23,19 +25,18 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
       .catch(err => console.log(err))
       .then(groups => {
         $scope.joined_group = groups;
-        $scope.selectedConvese = groups[0];
+        $scope.ordered = 0;
         $scope.$apply();
       });
   };
 
-  // setInterval(() => catch_err($scope.joined_group), 100);
-
-  $scope.selectConverse = function (group) {
-    $scope.selectedConvese = group;
-    // $scope.$apply();
+  $scope.selectConverse = function (key, group) {
+    console.log(key);
+    $scope.ordered = key;
   };
+
   $scope.showClass = (group_id) => {
-    if ($scope.selectedConvese.group_id === group_id)
+    if ($scope.joined_group[$scope.ordered].group_id === group_id)
       return "clicked";
     else return null;
   };
@@ -60,174 +61,62 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
     // else if (date. - old_date. > 0)
     //     how_much = `${date. - old_date.} `;
     return `Active ${how_much} ago.`;
+  };
+
+  $scope.focus = () => {
+    $scope.isFindUser = true;
+    $scope.input = document.getElementById('input-tags-selectized');
+    $scope.input.focus();
+  };
+
+  $scope.sentMessage = function(){
+    if (!$scope.message.trim()) return;
+
+    http.send($scope.joined_group[$scope.ordered].group_id, $scope.message.trim())
+      .catch(err => console.log(err));
+    $scope.message = '';
+  };
+
+  $scope.event = function ($event) {
+    // debugger
+    switch ($event.key) {
+      case "Enter":
+        $scope.sentMessage();
+        break;
+    }
   }
 
 }]);
 
 
 angular.module('tellar').factory('http', ['$http', function ($http) {
-  return {
-    getUserInfo: function () {
-      return $http({
-        method: 'GET',
-        url: '/api/user/userinfo',
-        headers: {
-          'x-access-token': localStorage.getItem('accessToken'),
-        },
-      });
-    },
-    getGroupInfo: function (group_id) {
-      return $http({
-        method: 'GET',
-        url: '/api/group',
-        params: {
-          group_id: group_id
-        },
-        headers: {
-          'x-access-token': localStorage.getItem('accessToken'),
-        }
-      }).then(res => res.data, err => console.log(err));
-    },
-    update: function (todoData) {
-      return $http.put('/api', todoData);
-    },
-    delete: function (todoData) {
-      return $http.delete('/api', todoData);
-    }
-  }
-}]);
 
-
-// JQuery
-$(document).ready(function () {
-  let tagInput = $('#input-tags');
-  let createGroup = $('#create-group');
-  let cancel = $('#cancel');
-
-  function loadData(query, callback) {
-    if (!query.length) return callback();
-    console.log(query);
-    $.ajax({
-      url: "/api/user/discovery",
-      type: "GET",
-      data: {
-        name: query.toString(),
-        onlyPeople: false
-      },
-      error: function () {
-        callback()
-      },
-      success: function (res) {
-        callback(res);
-        // console.log(res);
-      }
+  function request(url, params = {}, data = {}, method = 'GET', headers = {}) {
+    headers['x-access-token'] = localStorage.getItem('accessToken');
+    return $http({
+      method: method,
+      url: url,
+      params: params,
+      data: data,
+      headers: headers
     })
   }
 
-  tagInput.selectize({
-    valueField: "_id",
-    // labelField: "name",
-    searchField: ["name", "display_name"],
-    optgroupField: 'categories',
-    optgroupValueField: 'id',
-    openOnFocus: false,
-    lockOptgroupOrder: true,
-    delimiter: ',',
-    plugins: ["restore_on_backspace", 'remove_button', 'optgroup_columns'],
-    create: false,
-    maxOptions: 10,
-    maxItems: 10,
-    closeAfterSelect: true,
-    optgroups: [
-      {$order: 1, id: 'user', name: 'User'},
-      {$order: 2, id: 'group', name: 'Group'},
-    ],
-    render: {
-      item: function (item, escape) {
-        return "<div class='selectize-item'><div class='selectize-item-inner'>" + item.name + "</div></div>";
-      },
-      option: function (item, escape) {
-        let name = item.name || item.display_name;
-        return `<div class="selectize-option">
-                  <div class="wrapper-left">
-                    <img class="inner-wrapper-left" src="${item.cover_group}">
-                  </div>
-                  <div class="wrapper-right">
-                    ${name}
-                  </div>
-                </div>`;
-      },
-      optgroup_header: function (data, escape) {
-        console.log("header" + JSON.stringify(data));
-        return `<div class="selectize-header">${escape(data.name)}</div>`
-      }
+  return {
+    getUserInfo: function () {
+      return request('/api/user/userinfo');
     },
-    score: function (search) {
-      if (search.length < 3) return item => 0;
-      let score = this.getScoreFunction(search);
-      return item => {
-        return score(item);
-      };
+    getGroupInfo: function (group_id) {
+      return request('/api/group', {group_id: group_id})
+        .then(res => res.data, err => console.log(err));
     },
-    load: function (query, callback) {
-      if (!query.length) return callback();
-      console.log(query);
-      $http("/api/user/discovery",
-        "GET",
+    send: function (group_id, message, has_attachment = false) {
+      return request('/api/group/send', {},
         {
-          name: query.toString(),
-          onlyPeople: false
-        })
-        .catch(callback())
-        .then(res => callback(res));
-    },
-  });
-
-  // tagInput.each(function () {
-  //   let $container = $('<div>').addClass('value').html('Current Value: ');
-  //   let $value = $('<span>').appendTo($container);
-  //   let $input = $(this);
-  //   let update = function () {
-  //     $value.text(JSON.stringify($input.val()));
-  //   };
-  //
-  //   $(this).on('change', update);
-  //   update();
-  //
-  //   $container.insertAfter($input.next());
-  // });
-
-  function $http(url, method = "GET", data = {}) {
-    return new Promise(function (resolve, reject) {
-      $.ajax({
-        url: url,
-        type: method,
-        data: data,
-        error: reject,
-        success: resolve,
-      });
-    });
+          to: group_id,
+          message: message,
+          has_attachment: has_attachment
+        }, 'POST');
+    }
   }
-
-  createGroup.click(function () {
-    $(this).prop('disabled', true);
-    cancel.prop('disabled', true);
-    $http("/api/group/create-group",
-      "POST",
-      {
-        members: tagInput.val()
-      })
-      .catch(err => {
-        console.log(res);
-      })
-      .then(res => {
-        console.log(res);
-        $(this).prop('disabled', false);
-        cancel.prop('disabled', false);
-      });
-  });
-
-  cancel.click(function () {
-
-  });
-});
+}]);

@@ -34,7 +34,6 @@ let schema = new Schema({
     type: String,
     required: true,
     min: 5,
-    default: 'Conversation',
     trim: true
   },
   cover_group: {

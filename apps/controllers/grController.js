@@ -1,6 +1,8 @@
 let mongoose = require('mongoose');
 let Group = require('../models/group_model');
 let User = require('../models/user_model');
+let Conversation = require('../models/detail_convese_model');
+let md5 = require('md5');
 
 let makePrettyName = function (listUsers) {
   return listUsers
@@ -52,12 +54,14 @@ let createGroup = function (members) {
         }
       }));
 
+      let groupName = makePrettyName(data);
       let group = new Group({
         _id: _id,
-        display_name: makePrettyName(data),
+        display_name: groupName,
         members: members,
         type_of: members.length > 2,
-        admin: [members[members.length - 1]]
+        admin: [members[members.length - 1]],
+        detail_converse: md5(groupName + Date.now().toString())
       });
 
       resolve(group.save());
@@ -68,9 +72,43 @@ let createGroup = function (members) {
   });
 };
 
+let putMessage = function(collectionName, sender_id, message, attachment= {}){
+  return new Promise(function (resolve, reject) {
+    try {
+      let conversation = new Conversation(collectionName)({
+        _id: new mongoose.Types.ObjectId,
+        sender_id: sender_id,
+        content: message,
+        attachment: attachment,
+        viewers: [sender_id]
+      });
+      resolve(conversation.save())
+    } catch (e) {
+      reject(e)
+    }
+  })
+};
+
+let loadMessage = function(collectionName, from, to) {
+  return new Promise(function (resolve, reject) {
+    try{
+      let conversation = Conversation(collectionName);
+      conversation
+        .find({})
+        .exec()
+        .catch(e => reject(e))
+        .then(list => resolve(list));
+    } catch (e) {
+      reject(e)
+    }
+  })
+};
 
 module.exports = {
   findGroupById: findGroupById,
   findGroupByName: findGroupByName,
-  createGroup: createGroup
+  createGroup: createGroup,
+  putMessage: putMessage,
+  loadMessage: loadMessage,
+
 };

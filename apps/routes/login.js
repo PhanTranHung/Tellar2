@@ -25,7 +25,8 @@ router.post('/', function (req, res, next) {
         const accessToken = await jwtHelper.generateToken(adventure, accessTokenSecret, accessTokenLife);
         res.setHeader("set-cookie", "accessToken=" + accessToken);
         res.status(200).json({
-          accessToken: accessToken,
+          isValid: true,
+          redirect:'/'
         });
       }
       else res.status(200).json({

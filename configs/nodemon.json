@@ -1,10 +1,12 @@
 {
   "env": {
     "ACCESS_TOKEN_SECRET": "nang-vi-ta-ma-hoa-may-hoa-gio-ta-vi-nang-ma-giet-ca-dong-song",
-    "ACCESS_TOKEN_LIFE": "1h",
+    "ACCESS_TOKEN_LIFE": "5m",
     "REFRESH_TOKEN_SECRET": "refresh-token-secrect-make-by-CuHungahihi",
     "REFRESH_TOKEN_LIFE": "3650d",
     "PORT": 8888,
-    "HTTPS_PORT": 40001
+    "HTTPS_PORT": 40001,
+    "REDIS_ADAPTER_HOST": "localhost",
+    "REDIS_PORT": 9600
   }
 }

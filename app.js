@@ -5,7 +5,7 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let mongoose = require('mongoose');
 let config_db = require('./configs/mongodb');
-
+let io = require('./apps/sockets/home_socket');
 
 
 let indexRouter = require('./apps/routes/index');
@@ -18,6 +18,7 @@ let groupAPIRouter = require('./apps/routes/api/groupAPI');
 
 
 let app = express();
+app.io = io;
 
 mongoose.connect(`mongodb+srv://${config_db.user}:${config_db.password}@cluster0-cg8vd.mongodb.net/${config_db.db_name}?retryWrites=true&w=majority`,
   {
@@ -34,7 +35,6 @@ db.once('open', function () {
   console.log("Connected to Mongoose Cloud");
 });
 
-require('./test/findByID');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'apps', 'views'));
@@ -55,7 +55,7 @@ app.use('/sign-in', loginRouter);
 app.use('/sign-out', logoutRouter);
 app.use('/sign-up', signupRouter);
 app.use('/api/user', userAPIRouter);
-app.use('/api/group', groupAPIRouter);
+app.use('/api/group', groupAPIRouter(io));
 
 
 // catch 404 and forward to error handler

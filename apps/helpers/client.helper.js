@@ -1,4 +1,4 @@
-function renderError(res, message, error = null, cookies = null) {
+function renderError(res, message = {}, error = null, cookies = null) {
   if (cookies) res.cookie('accessToken', cookies);
   res.status(200).json(message);
   if (error) console.log(error);

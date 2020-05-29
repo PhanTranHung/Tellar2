@@ -36,10 +36,14 @@ let httpsServer = https.createServer(credentials, app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+app.io.attach(server, {
+  pingInterval: 10000,
+  pingTimeout: 5000,
+  cookie: false
+});
 
 httpsServer.listen(https_port);
 httpsServer.on('error', onError);

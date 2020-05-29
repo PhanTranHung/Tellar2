@@ -111,10 +111,10 @@
         if (data.err)
           $('#msg').text(data.err);
         else {
-          let d = new Date();
-          localStorage.setItem('accessToken', data.accessToken);
+          // localStorage.setItem('accessToken', data.accessToken);
           // document.cookie = `accessToken=${data.accessToken}; expires=${d.setTime(d.getTime() + (5000))}` ;
-          window.location = "/";
+          if (data.isValid)
+            window.location = data.redirect;
         }
         console.log(data);
       },

@@ -13,8 +13,20 @@ let schema = new Schema({
   content: {
     type: String,
     min: 1,
-    required: true,
     trim: true
+  },
+  attachment: {
+    media_type: String,
+    link: String
+  },
+  viewers: [{
+    type: Schema.Types.ObjectId,
+    ref: user_collection,
+    default: []
+  }],
+  removed: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: {

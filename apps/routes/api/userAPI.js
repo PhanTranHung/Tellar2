@@ -58,6 +58,7 @@ router.get('/discovery', auth.isAuth, async (req, res) => {
 
 router.get('/setting', auth.isAuth, (req, res) => {
   let query = req.query.query.trim();
+  let message = req.message;
 
 
 });
