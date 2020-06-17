@@ -8,6 +8,14 @@ $(document).ready(function () {
 
     addNewMessage(data.detail.content, data.detail.sender_id, data.to);
   });
+
+  let socket = io({path: '/socket-api'});
+
+  socket.on("error", function (err) {
+    console.error(err);
+  });
+
+
 });
 
 

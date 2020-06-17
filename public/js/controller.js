@@ -32,24 +32,33 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
   };
 
   $scope.selectConverse = function (key, group) {
-    console.log(key);
-    switchMessageArea(group.group_id);
-    $scope.ordered = {key: key, group_id: group.group_id};
+    if ($scope.ordered.key !== key){
+      console.log(key);
+      switchMessageArea(group.group_id);
+      $scope.ordered = {key: key, group_id: group.group_id};
+    }
   };
 
-  function switchMessageArea(messageAreaID){
+  function switchMessageArea(messageAreaID) {
 
-    if (msg_area[messageAreaID]) {
-      // hide the previous message area
+    // hide the previous message area
+    if (msg_area[$scope.ordered.group_id])
       msg_area[$scope.ordered.group_id].hide();
 
+    if (msg_area[messageAreaID]) {
       // show the message area just clicked
       msg_area[messageAreaID].show();
 
     } else {
       msg_area[messageAreaID] = createNewMessageAreaElement(messageAreaID);
-
-
+      http.loadMessage(messageAreaID, 0, 30).then(res => {
+        let listMessage = res.data;
+        // console.log(listMessage);
+        for (let index in listMessage) {
+          let message = listMessage[index];
+          addNewMessage(message.content, message.sender_id, messageAreaID);
+        }
+      });
       $('#wrap_able').append(msg_area[messageAreaID]);
     }
   }
@@ -88,7 +97,7 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
     $scope.input.focus();
   };
 
-  $scope.sentMessage = function(){
+  $scope.sentMessage = function () {
     if (!$scope.message.trim()) return;
 
     http.send($scope.ordered.group_id, $scope.message.trim())
@@ -123,19 +132,27 @@ angular.module('tellar').factory('http', ['$http', function ($http) {
 
   return {
     getUserInfo: function () {
-      return request('/api/user/userinfo');
+      return request('/api/user/user-info');
     },
     getGroupInfo: function (group_id) {
       return request('/api/group', {group_id: group_id})
         .then(res => res.data, err => console.log(err));
     },
     send: function (group_id, message, has_attachment = false) {
-      return request('/api/group/send', {},
+      return request('/api/group/send', null,
         {
           to: group_id,
           message: message,
           has_attachment: has_attachment
         }, 'POST');
+    },
+    loadMessage: function (groupID, start, end) {
+      return request(
+        '/api/group/load-message/' + groupID,
+        {
+          from: start,
+          to: end
+        });
     }
   }
 }]);

@@ -5,7 +5,7 @@ let mgs = require('mongoose');
 let User = require('../models/user_model');
 
 /* GET home page. */
-router.get('/', auth.isAuth ,function(req, res, next) {
+router.get('/', auth.authGUI ,function(req, res, next) {
   res.render('index', { username: 'Cuhungahihi' });
 });
 

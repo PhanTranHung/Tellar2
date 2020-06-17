@@ -1,8 +1,6 @@
-const cookieParser = require('cookie-parser');
 const socketCookieParser = require('socket.io-cookie-parser');
 const auth = require('../middleware/auth.middleware');
-let UserController = require('../controllers/userController');
-const redisAdapter = require('socket.io-redis');
+let UserBO = require('../BO/userBO');
 
 const io = require('socket.io')({
   path: '/socket-api',
@@ -13,6 +11,8 @@ const io = require('socket.io')({
 
 io.use(socketCookieParser());
 io.use(auth.authSocket);
+// io.use(socketErrorHandler);
+
 console.log(io.path());
 
 let chatRoom = io.of('/chat-room')
@@ -22,19 +22,24 @@ let chatRoom = io.of('/chat-room')
 
     let userId = socket.request.userInfo.data._id.trim();
     if (userId) {
-      UserController.setUserStatus(userId, true);
+      UserBO.setUserStatus(userId, true);
       socket.join(userId, () => {
         // chatRoom.to(userId).emit('server_send_chat_msg', {message: 'a new user has joined the room', type: 'all'});
       });
 
       socket.on('disconnect', () => {
         console.log("client disconnected");
-        UserController.setUserStatus(userId, false);
+        UserBO.setUserStatus(userId, false);
       });
     } else {
 
     }
   });
 
+
+function socketErrorHandler (socket, next){
+  // if (error) socket.emit("error", error);
+  return socket.disconnect();
+}
 
 module.exports = io;

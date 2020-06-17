@@ -3,7 +3,10 @@ let router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  // res.render('logout');
+  res.setHeader("set-cookie", "accessToken=guest");
+  res.status(200).json({
+    redirect:'/sign-in'
+  });
 
 });
 

@@ -1,11 +1,9 @@
 let express = require('express');
 let router = express.Router();
 let auth = require('../../middleware/auth.middleware');
-let User = require('../../models/user_model');
-let Group = require('../../models/group_model');
 let UserController = require('../../controllers/userController');
-let GroupController = require('../../controllers/grController');
-let client = require('../../helpers/client.helper');
+
+router.use('/', auth.authAPIs);
 
 /**
  * discovery more friend or any public group
@@ -13,54 +11,11 @@ let client = require('../../helpers/client.helper');
  *
  * no function to find friends
  */
-router.get('/discovery', auth.isAuth, async (req, res) => {
+router.get('/discovery', UserController.discoverFriend);
 
-  let userId = req.userInfo.data._id.trim();
-  let name = req.query.name.trim();
-  if (!name) {
-    client.errors.missingParameter(res);
-    return;
-  }
-
-  let selectFields = "name cover_photo";
-  let listUser = await UserController.findSomeOneByName(name, selectFields);
-  listUser = listUser.map(function (elem) {
-    elem._doc.categories = "user";
-    console.log(elem);
-    return elem;
-  });
-
-  selectFields = "display_name members cover_group";
-  let filter = {
-    $or: [{
-      members: {$in: [userId]}
-    }, {
-      type_of: true,
-      isPublic: true,
-      members: {$nin: [userId]}
-    }]
-  };
-
-  let limit = 10;
-  let listGroup = await GroupController.findGroupByName(name, selectFields, filter, limit);
-  listGroup = listGroup.map(function (elem) {
-    elem._doc.categories = "group";
-    elem._doc.name = elem.display_name;
-    return elem;
-  });
-
-
-  let response = listUser.concat(listGroup);
-
-  res.status(200).json(response);
-
-});
-
-router.get('/setting', auth.isAuth, (req, res) => {
+router.get('/setting', (req, res) => {
   let query = req.query.query.trim();
   let message = req.message;
-
-
 });
 
 // router.get('/audio-call', auth.isAuth, (req, res) => {
@@ -75,30 +30,6 @@ router.get('/setting', auth.isAuth, (req, res) => {
 // });
 
 /* GET home page. */
-router.get('/userinfo', auth.isAuth, function (req, res, next) {
-
-  let selectFields = 'name joined_group cover_photo';
-  let id_user = req.userInfo.data._id.trim();
-
-  UserController.findUserById(id_user, selectFields)
-    .then(user => {
-      if (!user) {
-        let error_msg = "User does not exist";
-        client.renderError(res, {
-          message: error_msg,
-          redirect: "/sign-in"
-        }, error_msg, "16549");
-      }
-      else {
-        let response = {
-          id: user._id,
-          name: user.name,
-          cover_photo: user.cover_photo,
-          joined_group: user.joined_group
-        };
-        res.status(200).json(response);
-      }
-    });
-});
+router.get('/user-info', UserController.getUserInformation);
 
 module.exports = router;
