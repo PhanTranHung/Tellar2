@@ -69,8 +69,12 @@ app.use(function (err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 404);
+  res.json({
+    error: true,
+    message: "The page you are looking for does not exist",
+    error_code: "page-not-exist"
+  });
   // console.error(err);
   console.error('Error: ' + req.path);
 });

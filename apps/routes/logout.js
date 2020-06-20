@@ -5,6 +5,7 @@ let router = express.Router();
 router.get('/', function(req, res, next) {
   res.setHeader("set-cookie", "accessToken=guest");
   res.status(200).json({
+    success: true,
     redirect:'/sign-in'
   });
 

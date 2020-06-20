@@ -19,7 +19,6 @@ let findGroupById = function (id, selectFields, populate) {
     .select(selectFields)
     .populate(populate)
     .exec()
-    .catch(err => console.error(err));
 };
 
 let findGroupByName = function (name, selectFields, filter={}, limit = 100) {

@@ -16,11 +16,11 @@ router.post('/',
     body('name')
       .trim()
       .isLength({min: 5, max: 30})
-      .withMessage("Your name too long or short"),
+      .withMessage("Your name must be bettwen 5 to 30 characters"),
     body("user_name")
       .trim()
       .isLength({min: 5, max: 30})
-      .withMessage("Username is not valid"),
+      .withMessage("User name must be between 5 and 30 characters and cannot use spaces"),
     body('email')
       .trim()
       .isEmail()
@@ -29,7 +29,7 @@ router.post('/',
       .trim()
       .custom((value, { req }) => {
         if (value.trim() !== req.body.confirmPass.trim()) {
-          throw new Error('Password confirmation is incorrect');
+          throw new Error('Password confirmation does not match');
         } else return true;
       }),
     body('phone')
@@ -39,13 +39,18 @@ router.post('/',
     body("gender")
       .trim()
       .toBoolean()
+      // .withMessage("Gender is not valid"),
   ],
   function (req, res, next) {
-
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log(errors);
-      return res.status(422).json({ errors: errors.array() });
+      return res.status(401).json({
+        error: true,
+        error_array_messgase: errors.array(),
+        message: "Some information is not valid"
+      });
     }
 
     let data = req.body;
@@ -62,9 +67,17 @@ router.post('/',
     });
 
     user.save().then(user_saved => {
-      res.redirect("/sign-in");
+      res.status(200).json({
+        success: true,
+        message: "Sign-up successsfully. Log in now",
+        redirect: true,
+        path: "/",
+      });
     }).catch(err => {
-      res.status(401).json({err: err});
+      res.status(401).json({
+        error: true,
+        message: "Sorry, an error occurred when registering for you, try again later!!"
+      });
       console.log(err);
     });
 

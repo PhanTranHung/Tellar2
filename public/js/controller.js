@@ -24,18 +24,19 @@ app.controller('rootController', ['$scope', 'http', function ($scope, http) {
     Promise.all(joined_group.map(group_id => http.getGroupInfo(group_id)))
       .catch(err => console.log(err))
       .then(groups => {
+        groups = groups.filter(group => !group.error)
         $scope.joined_group = groups;
-        $scope.ordered = {key: 0, group_id: groups[0].group_id};
+        $scope.ordered = { key: 0, group_id: groups[0].group_id };
         switchMessageArea(groups[0].group_id);
         $scope.$apply();
       });
   };
 
   $scope.selectConverse = function (key, group) {
-    if ($scope.ordered.key !== key){
+    if ($scope.ordered.key !== key) {
       console.log(key);
       switchMessageArea(group.group_id);
-      $scope.ordered = {key: key, group_id: group.group_id};
+      $scope.ordered = { key: key, group_id: group.group_id };
     }
   };
 
@@ -135,8 +136,33 @@ angular.module('tellar').factory('http', ['$http', function ($http) {
       return request('/api/user/user-info');
     },
     getGroupInfo: function (group_id) {
-      return request('/api/group', {group_id: group_id})
-        .then(res => res.data, err => console.log(err));
+      return request('/api/group', { group_id: group_id })
+        .then(
+          res => {
+            debugger
+            if (res.data)
+              return res.data;
+            let define_error = {
+              error: true,
+              error_code: "no-response",
+              message: "request with no response"
+            }
+            console.log(define_error);
+            return define_error
+          },
+          err => {
+            console.log(err);
+            if (err.data.error)
+              return err.data;
+            let define_error = {
+              error: true,
+              error_code: "undefine",
+              message: "I don't know"
+            }
+            console.log(define_error);
+            return define_errorF
+          }
+        );
     },
     send: function (group_id, message, has_attachment = false) {
       return request('/api/group/send', null,

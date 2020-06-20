@@ -1,8 +1,6 @@
 let express = require('express');
 let router = express.Router();
 let auth = require('../middleware/auth.middleware');
-let mgs = require('mongoose');
-let User = require('../models/user_model');
 
 /* GET home page. */
 router.get('/', auth.authGUI ,function(req, res, next) {

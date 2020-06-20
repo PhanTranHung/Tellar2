@@ -94,41 +94,42 @@
 <script src="vendor/select2/select2.min.js"></script>
 <!--===============================================================================================-->
 <script src="vendor/tilt/tilt.jquery.min.js"></script>
-<script>
-  // $('.js-tilt').tilt({
-  // 	scale: 1.1
-  // })
 
-  let frm = $('#form');
-
-  frm.submit(function (e) {
-    e.preventDefault();
-    $.ajax({
-      type: frm.attr('method'),
-      url: frm.attr('action'),
-      data: frm.serialize(),
-      success: function (data) {
-        if (data.err)
-          $('#msg').text(data.err);
-        else {
-          // localStorage.setItem('accessToken', data.accessToken);
-          // document.cookie = `accessToken=${data.accessToken}; expires=${d.setTime(d.getTime() + (5000))}` ;
-          if (data.isValid)
-            window.location = data.redirect;
-        }
-        console.log(data);
-      },
-      error: function (data) {
-        $('#msg').text("Connect failure");
-        console.log(data);
-      }
-
-    })
-  });
-
-</script>
 <!--===============================================================================================-->
 <script src="js/main.js"></script>
+<script>
+    // $('.js-tilt').tilt({
+    // 	scale: 1.1
+    // })
+  
+    let frm = $('#form');
+  
+    frm.submit(function (e) {
+      e.preventDefault();
+      $.ajax({
+        type: frm.attr('method'),
+        url: frm.attr('action'),
+        data: frm.serialize(),
+        success: function (data) {
+          if (data.error)
+            $('#msg').text(data.message);
+          else {
+            // localStorage.setItem('accessToken', data.accessToken);
+            // document.cookie = `accessToken=${data.accessToken}; expires=${d.setTime(d.getTime() + (5000))}` ;
+            if (data.redirect)
+              window.location = data.path;
+          }
+          console.log(data);
+        },
+        error: function (data) {
+          $('#msg').text(data.message);
+          console.log(data);
+        }
+  
+      })
+    });
+  
+  </script>
 
 </body>
 </html>

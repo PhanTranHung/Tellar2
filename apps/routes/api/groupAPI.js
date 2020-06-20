@@ -1,9 +1,7 @@
 let express = require('express');
 let router = express.Router();
 let auth = require('../../middleware/auth.middleware');
-let user_collection = require('../../../configs/mongodb').collections.user_collection;
 let GroupController = require('../../controllers/grController');
-let client = require('../../helpers/client.helper');
 
 
 module.exports = function (io) {

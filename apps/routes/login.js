@@ -25,15 +25,22 @@ router.post('/', function (req, res, next) {
         const accessToken = await jwtHelper.generateToken(adventure, accessTokenSecret, accessTokenLife);
         res.setHeader("set-cookie", "accessToken=" + accessToken);
         res.status(200).json({
+          success: true,
           isValid: true,
-          redirect:'/'
+          redirect: true,
+          path: '/',
         });
       }
       else res.status(200).json({
-        err: "Username or password is wrong"
+        error: true,
+        message: "Username or password is wrong, please try again",
       });
     })
     .catch(err => {
+      res.status(401).json({
+        error: true,
+        message: "Sorry, an error occurred when trying verify your account, try again later!!"
+      });
       console.error(err)
     });
 
